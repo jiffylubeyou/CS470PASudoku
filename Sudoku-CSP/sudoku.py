@@ -15,7 +15,7 @@ def student_name():
     #Task 1 CODE HERE
 
     #Change to be your name
-    return 'Cosmo Cougar'
+    return 'Kenton Strong'
 
 class Cell():
     """
@@ -172,9 +172,44 @@ class Sudoku():
 
         #Modify these return values!!
         if mode == 'remove':
+            # This loops through all the columns of the row
+            for i in range(len(self.cells[row])):
+                if (self.cells[row][i] != self.cells[row][column]):
+                    if (self.cells[row][i].remove_value(value) == False):
+                        return False
+            # This loops through all the rows of the column
+            for i in range(len(self.cells)):
+                if (self.cells[i][column] != self.cells[row][column]):
+                    if (self.cells[i][column].remove_value(value) == False):
+                        return False
+            # This loops through the grid
+            gridnum, cellgridnum = self.get_grid_cell(row, column)
+            for i in range(0,9):
+                if (i != cellgridnum):
+                    tempRow, tempColumn = self.get_row_column(gridnum, i)
+                    if (self.cells[tempRow][tempColumn].remove_value == False):
+                        return False
             return True
-        elif mode == 'count': 
-            return 0
+        elif mode == 'count':
+            # This loops through all the columns of the row
+            total = 0
+            for i in range(len(self.cells[row])):
+                if (self.cells[row][i] != self.cells[row][column]):
+                    if (value in self.cells[row][i].domain):
+                        total = total + 1
+            # This loops through all the rows of the column
+            for i in range(len(self.cells)):
+                if (self.cells[i][column] != self.cells[row][column]):
+                    if (value in self.cells[i][column].domain):
+                        total = total + 1
+            # This loops through the grid
+            gridnum, cellgridnum = self.get_grid_cell(row, column)
+            for i in range(0,9):
+                if (i != cellgridnum):
+                    tempRow, tempColumn = self.get_row_column(gridnum, i)
+                    if (value in self.cells[tempRow][tempColumn].domain):
+                        total = total + 1
+            return total
 
     def get_row_column(self, grid, cell):
         '''
