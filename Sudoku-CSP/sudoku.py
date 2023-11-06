@@ -243,6 +243,8 @@ def mrv(puzzle, unassigned):
     that have the minimum remaining values 
     [unassigned] is a list of (row, column) tuples corresponding to cell locations
     '''
+    max = 1000
+    for tuple in unassigned:
 
     # Change this.  Return your list of minimum remaining value locations
     return unassigned
@@ -275,9 +277,25 @@ def count_constraints(puzzle, row, column):
     '''
 
     # TASK 3 CODE HERE
-    
-    #MODIFY THIS
-    # return 0
+
+    total = 0
+    for i in range(len(self.cells[row])):
+        if (self.cells[row][i] != self.cells[row][column]):
+            if (self.cells[row][i].value == None):
+                total = total + 1
+    # This loops through all the rows of the column
+    for i in range(len(self.cells)):
+        if (self.cells[i][column] != self.cells[row][column]):
+            if (self.cells[i][column].value == None):
+                total = total + 1
+    # This loops through the grid
+    gridnum, cellgridnum = self.get_grid_cell(row, column)
+    for i in range(0, 9):
+        if (i != cellgridnum):
+            tempRow, tempColumn = self.get_row_column(gridnum, i)
+            if (self.cells[tempRow][tempColumn].value == None):
+                total = total + 1
+    return total
 
 def get_unassigned_variables(puzzle):
     '''
