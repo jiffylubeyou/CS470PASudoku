@@ -285,21 +285,21 @@ def count_constraints(puzzle, row, column):
     # TASK 3 CODE HERE
 
     total = 0
-    for i in range(len(self.cells[row])):
-        if (self.cells[row][i] != self.cells[row][column]):
-            if (self.cells[row][i].value == None):
+    for i in range(len(puzzle.cells[row])):
+        if (puzzle.cells[row][i] != puzzle.cells[row][column]):
+            if (puzzle.cells[row][i].value == None):
                 total = total + 1
     # This loops through all the rows of the column
-    for i in range(len(self.cells)):
-        if (self.cells[i][column] != self.cells[row][column]):
-            if (self.cells[i][column].value == None):
+    for i in range(len(puzzle.cells)):
+        if (puzzle.cells[i][column] != puzzle.cells[row][column]):
+            if (puzzle.cells[i][column].value == None):
                 total = total + 1
     # This loops through the grid
-    gridnum, cellgridnum = self.get_grid_cell(row, column)
+    gridnum, cellgridnum = puzzle.get_grid_cell(row, column)
     for i in range(0, 9):
         if (i != cellgridnum):
-            tempRow, tempColumn = self.get_row_column(gridnum, i)
-            if (self.cells[tempRow][tempColumn].value == None):
+            tempRow, tempColumn = puzzle.get_row_column(gridnum, i)
+            if (puzzle.cells[tempRow][tempColumn].value == None):
                 total = total + 1
     return total
 
@@ -351,12 +351,17 @@ def order_values(puzzle, row, column):
     '''
 
     #Get the current domain for this variable
+    value_counts = {}
     domain = puzzle.cells[row][column].domain[:]
+    for value in domain:
+        count = puzzle.forward_check(row, column, value, mode='count')
+        value_counts[value] = count
+    ordered_domain = sorted(domain, key=lambda x: value_counts[x])
 
     # TASK 5 CODE HERE
     
     #Change this to return an ordered list
-    return domain
+    return ordered_domain
 
 def backtracking_search(puzzle):
     '''
@@ -374,38 +379,45 @@ def backtracking_search(puzzle):
 
     # 1. Base case, is input [puzzle] solved? If so, return the puzzle. Use is_solved() function
     #    to see if the puzzle is solved.
+    if puzzle.is_solved():
+        return puzzle
 
     # 2. Select a variable to assign next ( use select_variable() function, which returns 
-    #    row and column of the variable 
+    #    row and column of the variable
+    row, column = select_variable(puzzle) 
 
     # 3. Select an ordering over the values (use order_values(r,c) where r, c are the row
     #    and column of the selected variable.  It returns a list of values
+    ordered_values = order_values(puzzle, row, column)
 
     # 4. For each value in the ordered list:
-
+    for value in ordered_values:
+        newpuzzle = Sudoku()
         # 4.1 Get a copy of the puzzle to modify
         #     4.1.a Create new puzzle
         
         #     4.1.b Set it to be equal to the current puzzle (use copy_puzzle())
-
+        newpuzzle.copy_puzzle(puzzle)
         # 4.2 Assign current value to selected variable (use assign_value())
-
+        newpuzzle.cells[row][column].assign_value(value)
         # 4.3 Forward check from this assignment (use forward_check(), in 'remove' mode)
         #     which will return False if this assignment is invalid (empty domain was found)
         #     or True if it is valid. 
-
+        success = newpuzzle.forward_check(row, column, value)
         # 4.4 If forward checking detects a problem, then continue to the next value
-
+        if (not success):
+            continue
         # 4.5 If forward checking doesn't detect problem, then recurse on the 
         #     modified puzzle (call backtracking_search())
-
+        solved_puzzle = backtracking_search(newpuzzle)
         # 4.6 If the search succeeds (return value of backtracking is not None)
         #     return solved puzzle! (this is what backtracking_search should return)
-
+        if (solved_puzzle is not None):
+            return solved_puzzle
         # 4.7 If search is a failure, continue with next value for this variable
 
     # 5. If all values for the chosen variable failed, return failure (None)
-    # return None
+    return None
     
 if __name__ == "__main__":
 
