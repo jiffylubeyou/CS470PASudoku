@@ -243,11 +243,17 @@ def mrv(puzzle, unassigned):
     that have the minimum remaining values 
     [unassigned] is a list of (row, column) tuples corresponding to cell locations
     '''
-    max = 1000
-    for tuple in unassigned:
-
+    min = 1000
+    for mytuple in unassigned:
+        if (len(puzzle.cells[mytuple[0]][mytuple[1]].domain) < min):
+            min = len(puzzle.cells[mytuple[0]][mytuple[1]].domain)
+    
+    mylist = []
+    for mytuple in unassigned:
+        if (len(puzzle.cells[mytuple[0]][mytuple[1]].domain) == min):
+            mylist.append(mytuple)
     # Change this.  Return your list of minimum remaining value locations
-    return unassigned
+    return mylist
 
 def max_degree(puzzle, tied):
     '''
